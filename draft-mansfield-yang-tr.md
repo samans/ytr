@@ -1,7 +1,7 @@
 ---
 title: "YANG Transliterate Feature"
 abbrev: "ytr"
-docname: draft-mansfield-yang-tr
+docname: draft-mansfield-yang-tr-latest
 category: info
 
 ipr: trust200902
