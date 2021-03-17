@@ -1,0 +1,182 @@
+
+
+
+
+TODO Working Group                                          S. Mansfield
+Internet-Draft                                                  Ericsson
+Intended status: Informational                             17 March 2021
+Expires: 18 September 2021
+
+
+                       YANG Transliterate Feature
+                     draft-mansfield-yang-tr-latest
+
+Abstract
+
+   TODO Abstract
+
+Discussion Venues
+
+   This note is to be removed before publishing as an RFC.
+
+   Discussion of this document takes place on the mailing list
+   (yang@ietf.org), which is archived at
+   https://mailarchive.ietf.org/arch/browse/yang/.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/samans/ytr.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 18 September 2021.
+
+Copyright Notice
+
+   Copyright (c) 2021 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Simplified BSD License text
+   as described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Simplified BSD License.
+
+Table of Contents
+
+   1.  Introduction
+   2.  Conventions and Definitions
+   3.  The "Transliterate" Statement
+     3.1.  TR Examples
+   4.  Security Considerations
+   5.  IANA Considerations
+   6.  Normative References
+   Acknowledgments
+   Author's Address
+
+1.  Introduction
+
+   Transliteration is a common practice that replaces or deletes
+   characters from a string.  There are several situations where
+   transliteration (tr) would be useful when using the YANG data
+   modeling language.  For example, whenever a string datatype is used
+   as a key or when strings need to be compared, it would be useful to
+   be able to specify a transliteration.  If a string pattern supports
+   both upper and lower case, then if one string is in upper and one in
+   lower in the compare, they will not match.  This draft suggests
+   adding a new substatement to support specifying a tr pattern for
+   string datatypes.
+
+2.  Conventions and Definitions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+3.  The "Transliterate" Statement
+
+   The "transliterate" statement, which is an optional substatemment to
+   the "type" statement, takes as an argument an ordered set of
+   characters.  The characters will be used to transliterate the value
+   of the string leaf when the leaf is retreived, is used as a key, or
+   when the leaf is compared to another leaf.
+
+   The format of the transliteration follows the rules and formats found
+   in [TR].
+
+3.1.  TR Examples
+
+      type string {
+         pattern "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}";
+         transliterate "'[:lower:]' '[:upper:]'";
+      }
+
+   If the above string datatype definition is used: * "12:34:ae" would
+   return as 12:34:AE
+
+   To remove all potential ambiguity, consider the following example.
+   In the IETF mac-address uses:
+
+       pattern "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}"
+
+   and the IEEE uses:
+
+       pattern "[0-9a-fA-F]{2}(-[0-9a-fA-F]{2}){5}";
+
+   So not only is the case of the letters ambiguous, so is the separator
+   used.  The IETF uses ":" and the IEEE uses "-".  When comparing mac-
+   addresses it is desirable to have semantically equivalent mac-address
+   match.  So if an IETF formatted mac-address is compared with an IEEE
+   mac-address even though the input patterns are different, they will
+   match if they addresses are semantically identical.  For example: *
+   IETF: 12:34:af and IEEE: 12-34-AF should match.
+
+   Multiple transliterate statements are allowed and are processed first
+   to last.
+
+   Using a transliterate statement like below, would allow the input to
+   follow the pattern, but ensure semantic equivalent addresses match.
+
+      type string {
+         pattern "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}";
+         transliterate "'[:lower:]' '[:upper:]'";
+         transliterate "-d '\-:'";
+      }
+
+   That pattern will take any valid input that matches the pattern and
+   return a normalized format that can be compared.  So: * 12:34:ae
+   would transliterate to 1234AE
+
+   The input can be in the desired format.  A NETCONF feature to turn on
+   or turn off the transliteration is TBD.
+
+4.  Security Considerations
+
+   TODO Security
+
+5.  IANA Considerations
+
+   This document has no IANA actions.
+
+6.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://datatracker.ietf.org/doc/html/rfc2119>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://datatracker.ietf.org/doc/html/rfc8174>.
+
+   [TR]       FSF, ., "GNU Coreutils TR", 2020,
+              <http://www.gnu.org/software/coreutils/manual/html_node/
+              tr-invocation.html#tr-invocation>.
+
+Acknowledgments
+
+   TODO acknowledge.
+
+Author's Address
+
+   Scott Mansfield
+   Ericsson
+
+   Email: scott.mansfield@ericsson.com
