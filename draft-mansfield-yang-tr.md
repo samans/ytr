@@ -60,23 +60,26 @@ The "transliterate" statement, which is an optional substatemment to the "type" 
 The format of the transliteration follows the rules and formats found in {{TR}}.
 
 ## TR Examples
-~~~~
+~~~~~~~~~~
    type string {
       pattern "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}";
       transliterate "'[:lower:]' '[:upper:]'";
    }
-~~~~
+~~~~~~~~~~
 If the above string datatype definition is used:
 * "12:34:ae" would return as 12:34:AE
 
 To remove all potential ambiguity, consider the following example.  In the IETF mac-address uses:
-~~~~
-* pattern "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}"
-~~~~
+
+~~~~~~~~~~
+    pattern "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}"
+~~~~~~~~~~
+
 and the IEEE uses:
-~~~~
-* pattern "[0-9a-fA-F]{2}(-[0-9a-fA-F]{2}){5}";
-~~~~
+
+~~~~~~~~~~
+    pattern "[0-9a-fA-F]{2}(-[0-9a-fA-F]{2}){5}";
+~~~~~~~~~~
 
 So not only is the case of the letters ambiguous, so is the separator used.  The IETF uses ":" and the IEEE uses "-".  When comparing mac-addresses it is desirable to have semantically equivalent mac-address match.  So if an IETF formatted mac-address is compared with an IEEE mac-address even though the input patterns are different, they will match if they addresses are semantically identical.  For example:
 * IETF: 12:34:af and IEEE: 12-34-AF should match.
@@ -85,16 +88,16 @@ Multiple transliterate statements are allowed and are processed first to last.
 
 Using a transliterate statement like below, would allow the input to follow the pattern, but ensure semantic equivalent addresses match.
 
-~~~~
+~~~~~~~~~~
    type string {
       pattern "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}";
       transliterate "'[:lower:]' '[:upper:]'";
       transliterate "-d '\-:'";
    }
-~~~~
+~~~~~~~~~~
 
 That pattern will take any valid input that matches the pattern and return a normalized format that can be compared.  So:
-*12:34:ae would transliterate to 1234AE
+* 12:34:ae would transliterate to 1234AE
 
 The input can be in the desired format.  A NETCONF feature to turn on or turn off the transliteration is TBD.
  
